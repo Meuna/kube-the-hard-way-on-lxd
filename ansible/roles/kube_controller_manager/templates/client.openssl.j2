@@ -1,0 +1,20 @@
+[req]
+distinguished_name = req_distinguished_name
+encrypt_key        = no
+prompt             = no
+req_extensions     = req_extensions
+
+[req_distinguished_name]
+C   = FR
+ST  = Occitanie
+L   = Toulouse
+CN = system:kube-controller-manager
+O  = system:kube-controller-manager
+
+[req_extensions]
+basicConstraints     = CA:FALSE
+extendedKeyUsage     = clientAuth
+keyUsage             = critical, digitalSignature, keyEncipherment
+nsCertType           = client
+nsComment            = "Kube Controller Manager Certificate"
+subjectKeyIdentifier = hash

@@ -1,0 +1,27 @@
+[Unit]
+Description=etcd
+Documentation=https://github.com/etcd-io/etcd
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/etcd \
+  --name node-0 \
+  --initial-advertise-peer-urls https://node-0.k8s-thw:2380 \
+  --listen-peer-urls https://10.10.10.24:2380 \
+  --listen-client-urls https://10.10.10.24:2379 \
+  --advertise-client-urls https://node-0.k8s-thw:2379 \
+  --initial-cluster-token k8s-thw \
+  --initial-cluster node-0=https://node-0.k8s-thw:2380,node-1=https://node-1.k8s-thw:2380,node-2=https://node-2.k8s-thw:2380 \
+  --initial-cluster-state new \
+  --cert-file=/srv/etcd/etc/node.crt \
+  --key-file=/srv/etcd/etc/node.key \
+  --trusted-ca-file=/srv/etcd/etc/ca.crt \
+  --peer-cert-file=/srv/etcd/etc/node.crt \
+  --peer-key-file=/srv/etcd/etc/node.key \
+  --peer-trusted-ca-file=/srv/etcd/etc/ca.crt \
+  --data-dir=/srv/etcd/var
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

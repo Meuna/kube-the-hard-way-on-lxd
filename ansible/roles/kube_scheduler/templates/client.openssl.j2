@@ -1,0 +1,25 @@
+[req]
+distinguished_name = req_distinguished_name
+encrypt_key        = no
+prompt             = no
+req_extensions     = req_extensions
+
+[req_distinguished_name]
+C   = FR
+ST  = Occitanie
+L   = Toulouse
+CN = system:kube-scheduler
+O  = system:system:kube-scheduler
+
+[req_extensions]
+basicConstraints     = CA:FALSE
+extendedKeyUsage     = clientAuth, serverAuth
+keyUsage             = critical, digitalSignature, keyEncipherment
+nsCertType           = client
+nsComment            = "Kube Scheduler Certificate"
+subjectAltName       = @alt_names
+subjectKeyIdentifier = hash
+
+[alt_names]
+IP.0  = 10.10.10.24
+DNS.0 = node-0.k8s-thw

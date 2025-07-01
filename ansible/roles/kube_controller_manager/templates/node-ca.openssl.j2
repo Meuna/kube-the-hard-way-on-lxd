@@ -1,0 +1,16 @@
+[req]
+distinguished_name = req_distinguished_name
+encrypt_key        = no
+prompt             = no
+req_extensions     = req_extensions
+
+[req_distinguished_name]
+C   = FR
+ST  = Occitanie
+L   = Toulouse
+CN  = kube-controller-manager-node-0
+
+[req_extensions]
+basicConstraints = CA:TRUE,pathlen:0
+keyUsage         = cRLSign,keyCertSign
+nsComment        = "kube-controller-manager CA"

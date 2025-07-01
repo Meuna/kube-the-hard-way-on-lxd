@@ -1,0 +1,39 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/usr/local/bin/kube-apiserver \
+  --allow-privileged=true \
+  --apiserver-count=1 \
+  --audit-log-maxage=30 \
+  --audit-log-maxbackup=3 \
+  --audit-log-maxsize=100 \
+  --audit-log-path=/var/log/audit.log \
+  --authorization-mode=Node,RBAC \
+  --bind-address=0.0.0.0 \
+  --client-ca-file=/srv/kube-apiserver/ca.crt \
+  --enable-admission-plugins=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \
+  --etcd-servers=https://node-0.k8s-thw:2379,https://node-1.k8s-thw:2379,https://node-2.k8s-thw:2379 \
+  --etcd-certfile=/srv/kube-apiserver/apiserver.crt \
+  --etcd-keyfile=/srv/kube-apiserver/apiserver.key \
+  --etcd-cafile=/srv/kube-apiserver/ca.crt \
+  --event-ttl=1h \
+  --encryption-provider-config=/srv/kube-apiserver/encryption-config.yaml \
+  --kubelet-certificate-authority=/srv/kube-apiserver/ca.crt \
+  --kubelet-client-certificate=/srv/kube-apiserver/apiserver.crt \
+  --kubelet-client-key=/srv/kube-apiserver/apiserver.key \
+  --runtime-config='api/all=true' \
+  --service-account-key-file=/srv/kube-apiserver/service-accounts.crt \
+  --service-account-signing-key-file=/srv/kube-apiserver/service-accounts.key \
+  --service-account-issuer=https://server.kubernetes.local:6443 \
+  --service-cluster-ip-range=10.32.0.0/24 \
+  --service-node-port-range=30000-32767 \
+  --tls-cert-file=/srv/kube-apiserver/apiserver.crt \
+  --tls-private-key-file=/srv/kube-apiserver/apiserver.key \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
