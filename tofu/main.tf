@@ -15,8 +15,8 @@ variable "ssh_pub_path" {
   default = "~/.ssh/id_rsa.pub"
 }
 
-resource "lxd_project" "k8sthw" {
-  name        = "k8sthw"
+resource "lxd_project" "kthw" {
+  name        = "kube-thw-on-lxd"
   description = "Kubernetes cluster build the hard way"
   config = {
     "features.storage.volumes" = true
@@ -27,25 +27,25 @@ resource "lxd_project" "k8sthw" {
   }
 }
 
-resource "lxd_network" "k8sthw" {
-  name = "k8sthw"
+resource "lxd_network" "kthw" {
+  name = "kube-thw-on-lxd"
 
   config = {
     "ipv4.nat"     = "true"
     "ipv6.address" = "none"
-    "dns.domain"   = "k8sthw.local"
+    "dns.domain"   = "kthw.local"
   }
 }
 
-resource "lxd_storage_pool" "k8sthw" {
-  project = lxd_project.k8sthw.name
-  name    = "k8sthw"
+resource "lxd_storage_pool" "kthw" {
+  project = lxd_project.kthw.name
+  name    = "kube-thw-on-lxd"
   driver  = "dir"
 }
 
-resource "lxd_profile" "k8sthw" {
-  project = lxd_project.k8sthw.name
-  name    = "k8sthw"
+resource "lxd_profile" "kthw-node" {
+  project = lxd_project.kthw.name
+  name    = "kube-thw-on-lxd-node"
 
   device {
     name = "eth0"
@@ -53,7 +53,7 @@ resource "lxd_profile" "k8sthw" {
 
     properties = {
       nictype = "bridged"
-      parent  = lxd_network.k8sthw.name
+      parent  = lxd_network.kthw.name
     }
   }
 
@@ -62,7 +62,7 @@ resource "lxd_profile" "k8sthw" {
     name = "root"
 
     properties = {
-      pool = lxd_storage_pool.k8sthw.name
+      pool = lxd_storage_pool.kthw.name
       path = "/"
     }
   }
@@ -73,19 +73,19 @@ resource "lxd_profile" "k8sthw" {
 }
 
 resource "lxd_instance" "jh" {
-  project  = lxd_project.k8sthw.name
+  project  = lxd_project.kthw.name
   name     = "jh"
   image    = "ubuntu:24.04"
   type     = "virtual-machine"
-  profiles = [lxd_profile.k8sthw.name]
+  profiles = [lxd_profile.kthw-node.name]
 }
 
 resource "lxd_instance" "node" {
   count    = 3
-  project  = lxd_project.k8sthw.name
+  project  = lxd_project.kthw.name
   name     = "node-${count.index}"
   image    = "ubuntu:24.04"
   type     = "virtual-machine"
-  profiles = [lxd_profile.k8sthw.name]
+  profiles = [lxd_profile.kthw-node.name]
 }
 
