@@ -1,0 +1,6 @@
+---
+etcd_version: 3.6.4
+etcd_url: https://github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz
+client_port: '2379'
+peer_port: '2380'
+cluster_token: '{{ domain }}'

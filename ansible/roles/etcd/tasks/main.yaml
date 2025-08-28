@@ -1,0 +1,45 @@
+---
+- name: create etcd folder structure
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - '{{ etcd_home }}'
+    - '{{ etcd_home }}/etc'
+    - '{{ etcd_home }}/var'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: download and install etcd {{ etcd_version }}
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: '{{ etcd_url }}'
+    dest: '{{ install_dir }}'
+    include: etcd-v{{ etcd_version }}-linux-amd64/etcd
+    extra_opts: --strip-components=1
+    mode: '0750'
+
+- name: generate initial cluster string
+  set_fact:
+    initial_cluster: >-
+      {{ groups['etcd']
+        | zip(groups['etcd'] | map('extract', hostvars) | map(attribute='ansible_host'))
+        | map('join', '=https://')
+        | map('regex_replace', '$', ':' + peer_port')
+        | join(',')
+      }}
+
+- name: create {{ etcd_service }}.service unit file
+  ansible.builtin.template:
+    src: unitfile.j2
+    dest: /etc/systemd/system/{{ etcd_service }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload etcd
+
+- name: enable and start etcd
+  ansible.builtin.service: name={{ etcd_service }} state=started enabled=yes

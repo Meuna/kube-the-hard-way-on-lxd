@@ -4,3 +4,9 @@
 
   roles:
     - pki
+
+- hosts: etcd
+  become: true
+
+  roles:
+    - etcd

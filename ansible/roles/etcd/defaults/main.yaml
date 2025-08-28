@@ -1,0 +1,4 @@
+---
+etcd_home: /opt/etcd
+etcd_service: etcd
+install_dir: /usr/local/bin

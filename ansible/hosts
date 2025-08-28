@@ -1,23 +1,28 @@
-[jh]
-jh.kthw.local
+jh      ansible_host=jh.kthw.local
+node-0  ansible_host=node-0.kthw.local
+node-1  ansible_host=node-1.kthw.local
+node-2  ansible_host=node-2.kthw.local
+
+[jumphost]
+jh
 
 [pki]
-jh.kthw.local
+jh
 
 [etcd]
-node-0.kthw.local
-node-1.kthw.local
-node-2.kthw.local
+node-0
+node-1
+node-2
 
 [apiserver]
-node-0.kthw.local
+node-0
 
 [managers]
-node-0.kthw.local
-node-1.kthw.local
-node-2.kthw.local
+node-0
+node-1
+node-2
 
 [workers]
-node-0.kthw.local
-node-1.kthw.local
-node-2.kthw.local
+node-0
+node-1
+node-2

@@ -1,0 +1,3 @@
+---
+- name: reload etcd
+  ansible.builtin.service: name=slapd state=reloaded
