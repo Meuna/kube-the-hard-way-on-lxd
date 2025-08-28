@@ -1,10 +1,16 @@
 [jh]
 jh.kthw.local
 
+[pki]
+jh.kthw.local
+
 [etcd]
 node-0.kthw.local
 node-1.kthw.local
 node-2.kthw.local
+
+[apiserver]
+node-0.kthw.local
 
 [managers]
 node-0.kthw.local
