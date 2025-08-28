@@ -1,0 +1,17 @@
+[jh]
+jh.kthw.local
+
+[etcd]
+node-0.kthw.local
+node-1.kthw.local
+node-2.kthw.local
+
+[managers]
+node-0.kthw.local
+node-1.kthw.local
+node-2.kthw.local
+
+[workers]
+node-0.kthw.local
+node-1.kthw.local
+node-2.kthw.local
