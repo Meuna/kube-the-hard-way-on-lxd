@@ -31,6 +31,7 @@
         | map('regex_replace', '$', ':' + etcd_peer_port)
         | join(',')
       }}
+  run_once: yes
 
 - name: create {{ etcd_service }}.service unit file
   ansible.builtin.template:

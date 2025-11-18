@@ -24,6 +24,7 @@
         | map('regex_replace', '^(.*)$', 'https://\1:' + etcd_client_port)
         | join(',')
       }}
+  run_once: yes
 
 - name: generate password file if missing
   ansible.builtin.copy:
