@@ -1,0 +1,35 @@
+---
+- name: create kube-apiserver folder structure
+  ansible.builtin.file:
+    path: '{{ kubectl_home }}'
+    state: directory
+    mode: '0755'
+
+- name: download and install kubectl {{ kube_version }}
+  ansible.builtin.get_url:
+    url: '{{ kube_base_url }}/kubectl'
+    dest: '{{ install_dir }}/kubectl'
+    mode: '0750'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: run slurp_ca task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: slurp_ca
+  vars:
+    slurp_var: ca_cert_slurp
+
+- name: read client key
+  ansible.builtin.slurp: src={{ kubectl_home }}/client.key
+  register: client_key_slurp
+
+- name: read client cert
+  ansible.builtin.slurp: src={{ kubectl_home }}/client.crt
+  register: client_cert_slurp
+
+- name: create kube config
+  ansible.builtin.template:
+    src: kubeconfig.j2
+    dest: '{{ kubectl_home }}/config'
+    mode: '0600'

@@ -1,0 +1,19 @@
+# "Call" this task file using using include/import,
+# and variable defined following the example.
+# 
+# Example:
+#
+# - name: run slurp_ca task from pki role
+#   ansible.builtin.import_role:
+#     name: pki
+#     tasks_from: slurp_ca
+#   vars:
+#     slurp_var: ca_cert_slurp
+---
+- name: read CA content from pki
+  ansible.builtin.slurp: src={{ pki_ca }}
+  register: slurp_result
+  delegate_to: '{{ groups.pki[0] }}'
+
+- name: set CA content in fact
+  ansible.builtin.set_fact: {'{{ slurp_var }}': '{{ slurp_result }}'}

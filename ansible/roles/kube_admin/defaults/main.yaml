@@ -1,0 +1,4 @@
+---
+kubectl_home: '$HOME/.kube'
+kubectl_username: admin
+install_dir: /usr/local/bin

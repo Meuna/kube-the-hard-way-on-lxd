@@ -24,9 +24,10 @@ ExecStart={{ install_dir }}/kube-apiserver \
   --kubelet-client-certificate={{ kapiserver_home }}/apiserver.crt \
   --kubelet-client-key={{ kapiserver_home }}/apiserver.key \
   --runtime-config='api/all=true' \
+  --secure-port={{ kube_apiserver_port }} \
   --service-account-key-file={{ kapiserver_home }}/service-accounts.crt \
   --service-account-signing-key-file={{ kapiserver_home }}/service-accounts.key \
-  --service-account-issuer=https://server.kubernetes.local:6443 \
+  --service-account-issuer=https://server.kubernetes.local:{{ kube_apiserver_port }} \
   --service-cluster-ip-range={{ kube_cluster_ip_cidr }} \
   --service-node-port-range={{ kube_node_port_range }} \
   --tls-cert-file={{ kapiserver_home }}/apiserver.crt \

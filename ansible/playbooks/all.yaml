@@ -24,3 +24,9 @@
 
   roles:
     - kube_apiserver
+
+- hosts: jumphost
+  become: true
+
+  roles:
+    - kube_admin

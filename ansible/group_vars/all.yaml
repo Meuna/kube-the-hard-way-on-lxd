@@ -6,8 +6,10 @@ domain: kthw.local
 
 kube_version: 1.34.0
 kube_base_url: https://dl.k8s.io/v{{ kube_version }}/bin/linux/amd64
+kube_cluster_name: kthw
 kube_cluster_ip_base_network: 10.32.0
 kube_cluster_ip_cidr: '{{ kube_cluster_ip_base_network }}.0/24'
 kube_node_port_range: 30000-32767
 
 kube_apiserver_cluster_ip: '{{ kube_cluster_ip_base_network }}.1'
+kube_apiserver_port: 6443
