@@ -28,7 +28,7 @@
       {{ groups['etcd']
         | zip(groups['etcd'] | map('extract', hostvars) | map(attribute='ansible_host'))
         | map('join', '=https://')
-        | map('regex_replace', '$', ':' + peer_port')
+        | map('regex_replace', '$', ':' + etcd_peer_port)
         | join(',')
       }}
 
@@ -39,7 +39,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: reload etcd
+  notify: restart etcd
 
 - name: enable and start etcd
   ansible.builtin.service: name={{ etcd_service }} state=started enabled=yes

@@ -6,10 +6,10 @@ Documentation=https://github.com/etcd-io/etcd
 Type=notify
 ExecStart={{ install_dir }}/etcd \
   --name {{ inventory_hostname }} \
-  --initial-advertise-peer-urls https://{{ inventory_hostname }}.{{ domain }}:{{ peer_port }} \
-  --listen-peer-urls https://{{ ansible_default_ipv4.address }}:{{ peer_port }} \
-  --listen-client-urls https://{{ ansible_default_ipv4.address }}:{{ client_port }} \
-  --advertise-client-urls https://{{ inventory_hostname }}.{{ domain }}:{{ client_port }} \
+  --initial-advertise-peer-urls https://{{ inventory_hostname }}.{{ domain }}:{{ etcd_peer_port }} \
+  --listen-peer-urls https://{{ ansible_default_ipv4.address }}:{{ etcd_peer_port }} \
+  --listen-client-urls https://{{ ansible_default_ipv4.address }}:{{ etcd_client_port }} \
+  --advertise-client-urls https://{{ inventory_hostname }}.{{ domain }}:{{ etcd_client_port }} \
   --initial-cluster-token {{ cluster_token }} \
   --initial-cluster {{ initial_cluster }} \
   --initial-cluster-state new \
