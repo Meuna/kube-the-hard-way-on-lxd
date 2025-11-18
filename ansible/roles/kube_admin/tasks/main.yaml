@@ -13,23 +13,11 @@
 
 - ansible.builtin.import_tasks: tls.yaml
 
-- name: run slurp_ca task from pki role
+- name: run gen_kubeconfig task from kube_utils role
   ansible.builtin.import_role:
-    name: pki
-    tasks_from: slurp_ca
+    name: kube_utils
+    tasks_from: gen_kubeconfig
   vars:
-    slurp_var: ca_cert_slurp
-
-- name: read client key
-  ansible.builtin.slurp: src={{ kubectl_home }}/client.key
-  register: client_key_slurp
-
-- name: read client cert
-  ansible.builtin.slurp: src={{ kubectl_home }}/client.crt
-  register: client_cert_slurp
-
-- name: create kube config
-  ansible.builtin.template:
-    src: kubeconfig.j2
-    dest: '{{ kubectl_home }}/config'
-    mode: '0600'
+    kubeconfig_path: '{{ kubectl_home }}/kubeconfig'
+    key_path: '{{ kubectl_home }}/client.key'
+    crt_path: '{{ kubectl_home }}/client.crt'

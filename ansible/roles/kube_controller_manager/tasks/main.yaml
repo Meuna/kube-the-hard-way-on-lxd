@@ -22,29 +22,14 @@
   vars:
     sa_key_path: '{{ kcontroller_home }}/service-accounts.key'
 
-- name: run slurp_ca task from pki role
+- name: run gen_kubeconfig task from kube_utils role
   ansible.builtin.import_role:
-    name: pki
-    tasks_from: slurp_ca
+    name: kube_utils
+    tasks_from: gen_kubeconfig
   vars:
-    slurp_var: ca_cert_slurp
-
-- name: read client key
-  ansible.builtin.slurp: src={{ kcontroller_home }}/client.key
-  register: client_key_slurp
-
-- name: read client cert
-  ansible.builtin.slurp: src={{ kcontroller_home }}/client.crt
-  register: client_cert_slurp
-
-- name: create kubeconfig
-  ansible.builtin.template:
-    src: kubeconfig.j2
-    dest: '{{ kcontroller_home }}/kubeconfig'
-    owner: root
-    group: root
-    mode: '0600'
-  notify: restart kube-controller-manager
+    kubeconfig_path: '{{ kcontroller_home }}/kubeconfig'
+    key_path: '{{ kcontroller_home }}/client.key'
+    crt_path: '{{ kcontroller_home }}/client.crt'
 
 - name: create {{ kcontroller_service }}.service unit file
   ansible.builtin.template:
