@@ -83,6 +83,7 @@
             - nodes/metrics
           verbs:
             - "*"
+  delegate_to: '{{ groups.jumphost[0] }}'
 
 - name: create kube-apiserver-to-kubelet ClusterRoleBinding
   kubernetes.core.k8s:
@@ -102,3 +103,4 @@
         - apiGroup: rbac.authorization.k8s.io
           kind: User
           name: kubernetes
+  delegate_to: '{{ groups.jumphost[0] }}'
