@@ -1,0 +1,82 @@
+---
+- name: create TLS private key for the apiserver
+  community.crypto.openssl_privatekey:
+    path: '{{ kapiserver_home }}/apiserver.key'
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: create certificate signing request for the apiserver cert
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: '{{ kapiserver_home }}/apiserver.key'
+    common_name: kubernetes
+    country_name: '{{ pki_country }}'
+    state_or_province_name: '{{ pki_state }}'
+    locality_name: '{{ pki_locality }}'
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: true
+    extended_key_usage:
+      - clientAuth
+      - serverAuth
+    subject_alt_name:
+      - IP:127.0.0.1
+      - IP:{{ ansible_default_ipv4.address }}
+      - IP:{{ kube_apiserver_cluster_ip }}
+      - DNS:kubernetes
+      - DNS:kubernetes.default
+      - DNS:kubernetes.default.svc
+      - DNS:{{ inventory_hostname }}.{{ domain }}
+  register: openssl_csr_pipe_result
+  changed_when: no
+
+- name: run sign task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: sign
+  vars:
+    csr_content: '{{ openssl_csr_pipe_result.csr }}'
+    crt_path: '{{ kapiserver_home }}/apiserver.crt'
+- name: create TLS private key for the apiserver
+  community.crypto.openssl_privatekey:
+    path: '{{ kapiserver_home }}/apiserver.key'
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: create TLS private key for the apiserver
+  community.crypto.openssl_privatekey:
+    path: '{{ kapiserver_home }}/service-accounts.key'
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: create certificate signing request for the service-accounts cert
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: '{{ kapiserver_home }}/service-accounts.key'
+    common_name: service-accounts
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: true
+    extended_key_usage:
+      - clientAuth
+    use_common_name_for_san: no
+  register: openssl_csr_pipe_result
+  changed_when: no
+
+- name: run sign task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: sign
+  vars:
+    csr_content: '{{ openssl_csr_pipe_result.csr }}'
+    crt_path: '{{ kapiserver_home }}/service-accounts.crt'
+
+- name: run get_ca task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: get_ca
+  vars:
+    crt_path: '{{ kapiserver_home }}/ca.crt'

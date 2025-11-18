@@ -1,0 +1,3 @@
+---
+- name: restart kube-apiserver
+  ansible.builtin.service: name={{ kapiserver_service }} state=restarted

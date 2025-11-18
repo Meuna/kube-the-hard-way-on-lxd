@@ -1,0 +1,4 @@
+---
+kapiserver_home: /opt/kube-apiserver
+kapiserver_service: kube-apiserver
+install_dir: /usr/local/bin

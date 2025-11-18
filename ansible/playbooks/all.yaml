@@ -1,4 +1,12 @@
 ---
+- hosts: all
+  become: true
+
+  tasks:
+    - name: update package cache
+      ansible.builtin.package:
+        update_cache: true
+
 - hosts: pki
   become: true
 
@@ -10,3 +18,9 @@
 
   roles:
     - etcd
+
+- hosts: apiserver
+  become: true
+
+  roles:
+    - kube_apiserver

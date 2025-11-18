@@ -1,0 +1,61 @@
+---
+- name: create kube-apiserver folder structure
+  ansible.builtin.file:
+    path: '{{ kapiserver_home }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: download and install kube-apiserver {{ kube_version }}
+  ansible.builtin.get_url:
+    url: '{{ kube_base_url }}/kube-apiserver'
+    dest: '{{ install_dir }}/kube-apiserver'
+    mode: '0750'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: generate initial cluster string
+  set_fact:
+    etcd_servers: >-
+      {{ groups['etcd']
+        | map('extract', hostvars)
+        | map(attribute='ansible_host')
+        | map('regex_replace', '^(.*)$', 'https://\1:' + client_port)
+        | join(',')
+      }}
+
+- name: generate password file if missing
+  ansible.builtin.copy:
+    dest: '{{ kapiserver_home }}/encryption.key'
+    content: '{{ lookup("community.general.random_string", length=32, base64=True) }}'
+    owner: root
+    group: root
+    mode: '0600'
+    force: false
+
+- name: read password file
+  ansible.builtin.slurp:
+    src: '{{ kapiserver_home }}/encryption.key'
+  register: encryption_key_slurp
+
+- name: create encryption-config.yaml unit file
+  ansible.builtin.template:
+    src: encryption-config.yaml.j2
+    dest: '{{ kapiserver_home }}/encryption-config.yaml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kube-apiserver
+
+- name: create {{ kapiserver_service }}.service unit file
+  ansible.builtin.template:
+    src: unitfile.j2
+    dest: /etc/systemd/system/{{ kapiserver_service }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kube-apiserver
+
+- name: enable and start kube-apiserver
+  ansible.builtin.service: name={{ kapiserver_service }} state=started enabled=yes

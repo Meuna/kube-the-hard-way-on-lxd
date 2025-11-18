@@ -5,12 +5,11 @@ resources:
   - resources:
       - secrets
       - configmaps
-      - pandas.awesome.bears.example
     providers:
       - aescbc:
           keys:
             - name: key1
               # See the following text for more details about the secret value
-              secret: OjhDXX4pflJFXklfI0QyXmNOYjxpNClDLHhlOj5UcVc=
+              secret: {{ encryption_key_slurp.content | b64decode }}
       - identity: {} # this fallback allows reading unencrypted secrets;
                      # for example, during initial migration
