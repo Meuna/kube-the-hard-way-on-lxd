@@ -43,3 +43,4 @@
 
   roles:
     - containerd
+    - kubelet

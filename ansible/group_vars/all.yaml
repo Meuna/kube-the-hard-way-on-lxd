@@ -17,3 +17,5 @@ kube_node_port_range: 30000-32767
 
 kube_apiserver_cluster_ip: '{{ kube_cluster_ip_base_network }}.1'
 kube_apiserver_port: 6443
+
+kube_dns_cluster_ip: '{{ kube_cluster_ip_base_network }}.10'

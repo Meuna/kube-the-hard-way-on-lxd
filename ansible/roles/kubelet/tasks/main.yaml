@@ -1,0 +1,46 @@
+---
+- name: create kubelet folder structure
+  ansible.builtin.file:
+    path: '{{ kubelet_home }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: download and install kubelet {{ kube_version }}
+  ansible.builtin.get_url:
+    url: '{{ kube_base_url }}/kubelet'
+    dest: '{{ install_dir }}/kubelet'
+    mode: '0750'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: run gen_kubeconfig task from kube_utils role
+  ansible.builtin.import_role:
+    name: kube_utils
+    tasks_from: gen_kubeconfig
+  vars:
+    kubeconfig_path: '{{ kubelet_home }}/kubeconfig'
+    key_path: '{{ kubelet_home }}/client.key'
+    crt_path: '{{ kubelet_home }}/client.crt'
+
+- name: create kubelet.yaml
+  ansible.builtin.template:
+    src: kubelet.yaml.j2
+    dest: '{{ kubelet_home }}/kubelet.yaml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kubelet
+
+- name: create {{ kubelet_service }}.service unit file
+  ansible.builtin.template:
+    src: unitfile.j2
+    dest: /etc/systemd/system/{{ kubelet_service }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kubelet
+
+- name: enable and start kubelet
+  ansible.builtin.service: name={{ kubelet_service }} state=started enabled=yes

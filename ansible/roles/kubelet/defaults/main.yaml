@@ -1,0 +1,5 @@
+---
+kubelet_home: /opt/kubelet
+kubelet_service: kubelet
+kube_username: system:node:{{ inventory_hostname }}
+install_dir: /usr/local/bin

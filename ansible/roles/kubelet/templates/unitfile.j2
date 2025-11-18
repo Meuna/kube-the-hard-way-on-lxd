@@ -5,9 +5,9 @@ After=containerd.service
 Requires=containerd.service
 
 [Service]
-ExecStart=/usr/local/bin/kubelet \
-  --config=/srv/kubelet/kubelet.yaml \
-  --kubeconfig=/srv/kubelet/kubeconfig \
+ExecStart={{ install_dir }}/kubelet \
+  --config={{ kubelet_home }}/kubelet.yaml \
+  --kubeconfig={{ kubelet_home }}/kubeconfig \
   --register-node=true \
   --v=2
 Restart=on-failure

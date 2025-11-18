@@ -6,15 +6,15 @@ authentication:
   webhook:
     enabled: true
   x509:
-    clientCAFile: "/srv/kubelet/ca.crt"
+    clientCAFile: "{{ kubelet_home }}/ca.crt"
 authorization:
   mode: Webhook
 clusterDomain: "cluster.local"
 clusterDNS:
-  - "10.32.0.10"
+  - "{{ kube_dns_cluster_ip }}"
 cgroupDriver: systemd
 containerRuntimeEndpoint: "unix:///var/run/containerd/containerd.sock"
 resolvConf: "/etc/resolv.conf"
 runtimeRequestTimeout: "15m"
-tlsCertFile: "/srv/kubelet/node.crt"
-tlsPrivateKeyFile: "/srv/kubelet/node.key"
+tlsCertFile: "{{ kubelet_home }}/client.crt"
+tlsPrivateKeyFile: "{{ kubelet_home }}/client.key"
