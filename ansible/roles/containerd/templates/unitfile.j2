@@ -19,10 +19,10 @@ After=network.target dbus.service
 
 [Service]
 ExecStartPre=-/sbin/modprobe overlay
-ExecStart=/usr/local/bin/containerd \
-  --config /srv/containerd/etc/config.toml \
-  --root /srv/containerd/var \
-  --state /srv/containerd/run
+ExecStart={{ install_dir }}/containerd \
+  --config {{ containerd_home }}/etc/config.toml \
+  --root {{ containerd_home }}/var \
+  --state {{ containerd_home }}/run
 
 Type=notify
 Delegate=yes

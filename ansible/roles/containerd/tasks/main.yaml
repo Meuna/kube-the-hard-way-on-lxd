@@ -1,0 +1,48 @@
+---
+- name: create etcd folder structure
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - '{{ containerd_home }}'
+    - '{{ containerd_home }}/etc'
+    - '{{ containerd_home }}/run'
+    - '{{ containerd_home }}/var'
+
+- name: download and install runc {{ runc_version }}
+  ansible.builtin.get_url:
+    url: '{{ runc_url }}'
+    dest: '{{ install_dir }}/runc'
+    mode: '0750'
+
+- name: download and install containerd {{ containerd_version }}
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: '{{ containerd_url }}'
+    dest: '{{ install_dir }}'
+    extra_opts: --strip-components=1
+    mode: '0750'
+
+- name: create config.toml file
+  ansible.builtin.template:
+    src: config.toml.j2
+    dest: '{{ containerd_home }}/etc/config.toml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart containerd
+
+- name: create {{ containerd_service }}.service unit file
+  ansible.builtin.template:
+    src: unitfile.j2
+    dest: /etc/systemd/system/{{ containerd_service }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart containerd
+
+- name: enable and start containerd
+  ansible.builtin.service: name={{ containerd_service }} state=started enabled=yes

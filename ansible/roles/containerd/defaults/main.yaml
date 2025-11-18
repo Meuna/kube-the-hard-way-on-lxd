@@ -1,0 +1,5 @@
+---
+containerd_home: /opt/containerd
+cni_home: /opt/cni
+containerd_service: containerd
+install_dir: /usr/local/bin

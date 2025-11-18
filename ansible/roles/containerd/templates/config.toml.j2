@@ -9,5 +9,5 @@ version = 2
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
     SystemdCgroup = true
 [plugins."io.containerd.grpc.v1.cri".cni]
-  bin_dir = "/srv/cni/bin"
-  conf_dir = "/srv/cni/etc"
+  bin_dir = "{{ cni_home }}/bin"
+  conf_dir = "{{ cni_home }}/etc"
