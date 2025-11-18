@@ -1,0 +1,5 @@
+---
+kscheduler_home: /opt/kube-scheduler
+kscheduler_service: kube-scheduler
+kube_username: system:kube-scheduler
+install_dir: /usr/local/bin

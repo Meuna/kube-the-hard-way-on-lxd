@@ -1,0 +1,46 @@
+---
+- name: create kube-scheduler folder structure
+  ansible.builtin.file:
+    path: '{{ kscheduler_home }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: download and install kube-scheduler {{ kube_version }}
+  ansible.builtin.get_url:
+    url: '{{ kube_base_url }}/kube-scheduler'
+    dest: '{{ install_dir }}/kube-scheduler'
+    mode: '0750'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: run gen_kubeconfig task from kube_utils role
+  ansible.builtin.import_role:
+    name: kube_utils
+    tasks_from: gen_kubeconfig
+  vars:
+    kubeconfig_path: '{{ kscheduler_home }}/kubeconfig'
+    key_path: '{{ kscheduler_home }}/client.key'
+    crt_path: '{{ kscheduler_home }}/client.crt'
+
+- name: create kube-scheduler.yaml
+  ansible.builtin.template:
+    src: kube-scheduler.yaml.j2
+    dest: '{{ kscheduler_home }}/kube-scheduler.yaml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kube-scheduler
+
+- name: create {{ kscheduler_service }}.service unit file
+  ansible.builtin.template:
+    src: unitfile.j2
+    dest: /etc/systemd/system/{{ kscheduler_service }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kube-scheduler
+
+- name: enable and start kube-scheduler
+  ansible.builtin.service: name={{ kscheduler_service }} state=started enabled=yes

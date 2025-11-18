@@ -3,8 +3,8 @@ Description=Kubernetes Scheduler
 Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
-ExecStart=/usr/local/bin/kube-scheduler \
-  --config=/srv/kube-scheduler/kube-scheduler.yaml \
+ExecStart={{ install_dir }}/kube-scheduler \
+  --config={{ kscheduler_home }}/kube-scheduler.yaml \
   --v=2
 Restart=on-failure
 RestartSec=5

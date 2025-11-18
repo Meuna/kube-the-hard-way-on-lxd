@@ -1,0 +1,3 @@
+---
+- name: restart kube-scheduler
+  ansible.builtin.service: name={{ kscheduler_service }} state=restarted

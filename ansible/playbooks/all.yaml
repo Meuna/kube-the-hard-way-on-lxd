@@ -30,6 +30,7 @@
 
   roles:
     - kube_controller_manager
+    - kube_scheduler
 
 - hosts: jumphost
   become: true
