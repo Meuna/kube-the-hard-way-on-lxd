@@ -7,7 +7,7 @@
 - name: create certificate signing request
   community.crypto.openssl_csr_pipe:
     privatekey_path: '{{ kubectl_home }}/client.key'
-    common_name: '{{ kubectl_username }}'
+    common_name: '{{ kube_username }}'
     organization_name: system:masters
     country_name: '{{ pki_country }}'
     state_or_province_name: '{{ pki_state }}'
