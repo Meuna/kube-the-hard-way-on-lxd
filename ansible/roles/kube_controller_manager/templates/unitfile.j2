@@ -3,17 +3,17 @@ Description=Kubernetes Controller Manager
 Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
-ExecStart=/usr/local/bin/kube-controller-manager \
+ExecStart={{ install_dir }}/kube-controller-manager \
   --bind-address=0.0.0.0 \
-  --cluster-cidr=10.200.0.0/16 \
+  --cluster-cidr={{ kube_pod_cidr }} \
   --allocate-node-cidrs=true \
-  --cluster-name=k8s-thw \
-  --cluster-signing-cert-file=/srv/kube-controller-manager/ca-node.crt \
-  --cluster-signing-key-file=/srv/kube-controller-manager/ca-node.key \
-  --kubeconfig=/srv/kube-controller-manager/kubeconfig \
-  --root-ca-file=/srv/kube-controller-manager/ca.crt \
-  --service-account-private-key-file=/srv/kube-controller-manager/service-accounts.key \
-  --service-cluster-ip-range=10.32.0.0/24 \
+  --cluster-name={{ kube_cluster_name }} \
+  --cluster-signing-cert-file={{ kcontroller_home }}/node-ca.crt \
+  --cluster-signing-key-file={{ kcontroller_home }}/node-ca.key \
+  --kubeconfig={{ kcontroller_home }}/kubeconfig \
+  --root-ca-file={{ kcontroller_home }}/ca.crt \
+  --service-account-private-key-file={{ kcontroller_home }}/service-accounts.key \
+  --service-cluster-ip-range={{ kube_cluster_ip_cidr }} \
   --use-service-account-credentials=true \
   --v=2
 Restart=on-failure

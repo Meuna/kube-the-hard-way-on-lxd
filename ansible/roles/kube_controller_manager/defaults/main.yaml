@@ -1,0 +1,5 @@
+---
+kcontroller_home: /opt/kube-controller-manager
+kcontroller_service: kube-controller-manager
+kube_username: system:kube-controller-manager
+install_dir: /usr/local/bin

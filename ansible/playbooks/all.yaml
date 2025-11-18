@@ -25,6 +25,12 @@
   roles:
     - kube_apiserver
 
+- hosts: managers
+  become: true
+
+  roles:
+    - kube_controller_manager
+
 - hosts: jumphost
   become: true
 

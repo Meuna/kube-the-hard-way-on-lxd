@@ -1,0 +1,3 @@
+---
+- name: restart kube-controller-manager
+  ansible.builtin.service: name={{ kcontroller_service }} state=restarted

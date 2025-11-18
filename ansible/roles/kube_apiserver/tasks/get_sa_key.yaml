@@ -1,0 +1,27 @@
+# "Call" this task file using using include/import,
+# and variable defined following the example.
+# 
+# Example:
+#
+# - name: run get_sa_key task from kube_apiserver role
+#   ansible.builtin.import_role:
+#     name: kube_apiserver
+#     tasks_from: get_sa_key
+#   vars:
+#     sa_key_path: '{{ kcontroller_home }}/service-accounts.key'
+#     sa_key_owner: 'root'
+#     sa_key_group: 'root'
+#     sa_key_mode: '0600'
+---
+- name: read service-accounts.key content from kube apiserver
+  ansible.builtin.slurp: src={{ kapiserver_home }}/service-accounts.key
+  register: slurp_result
+  delegate_to: '{{ groups.apiserver[0] }}'
+
+- name: write service-accounts.key on the calling host
+  ansible.builtin.copy:
+    content: '{{ slurp_result.content | b64decode }}'
+    dest: '{{ sa_key_path | default }}'
+    owner: '{{ sa_key_owner | default("root") }}'
+    group: '{{ sa_key_group | default("root")  }}'
+    mode: '{{ sa_key_mode | default("0600")  }}'

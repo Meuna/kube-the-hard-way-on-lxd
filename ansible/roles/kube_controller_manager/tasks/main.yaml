@@ -1,0 +1,59 @@
+---
+- name: create kube-controller-manager folder structure
+  ansible.builtin.file:
+    path: '{{ kcontroller_home }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: download and install kube-controller-manager {{ kube_version }}
+  ansible.builtin.get_url:
+    url: '{{ kube_base_url }}/kube-controller-manager'
+    dest: '{{ install_dir }}/kube-controller-manager'
+    mode: '0750'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: run get_sa_key task from kube_apiserver role
+  ansible.builtin.import_role:
+    name: kube_apiserver
+    tasks_from: get_sa_key
+  vars:
+    sa_key_path: '{{ kcontroller_home }}/service-accounts.key'
+
+- name: run slurp_ca task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: slurp_ca
+  vars:
+    slurp_var: ca_cert_slurp
+
+- name: read client key
+  ansible.builtin.slurp: src={{ kcontroller_home }}/client.key
+  register: client_key_slurp
+
+- name: read client cert
+  ansible.builtin.slurp: src={{ kcontroller_home }}/client.crt
+  register: client_cert_slurp
+
+- name: create kubeconfig
+  ansible.builtin.template:
+    src: kubeconfig.j2
+    dest: '{{ kcontroller_home }}/kubeconfig'
+    owner: root
+    group: root
+    mode: '0600'
+  notify: restart kube-controller-manager
+
+- name: create {{ kcontroller_service }}.service unit file
+  ansible.builtin.template:
+    src: unitfile.j2
+    dest: /etc/systemd/system/{{ kcontroller_service }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kube-controller-manager
+
+- name: enable and start kube-controller-manager
+  ansible.builtin.service: name={{ kcontroller_service }} state=started enabled=yes

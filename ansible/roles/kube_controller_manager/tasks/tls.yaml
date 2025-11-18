@@ -1,0 +1,72 @@
+---
+- name: create TLS private key for the controller client
+  community.crypto.openssl_privatekey:
+    path: '{{ kcontroller_home }}/client.key'
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: create certificate signing request for the controller client cert
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: '{{ kcontroller_home }}/client.key'
+    common_name: '{{ kube_username }}'
+    organization_name: '{{ kube_username }}'
+    country_name: '{{ pki_country }}'
+    state_or_province_name: '{{ pki_state }}'
+    locality_name: '{{ pki_locality }}'
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: true
+    extended_key_usage:
+      - clientAuth
+    use_common_name_for_san: no
+  register: openssl_csr_pipe_result
+  changed_when: no
+
+- name: run sign task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: sign
+  vars:
+    csr_content: '{{ openssl_csr_pipe_result.csr }}'
+    crt_path: '{{ kcontroller_home }}/client.crt'
+
+- name: create TLS private key for the node CA
+  community.crypto.openssl_privatekey:
+    path: '{{ kcontroller_home }}/node-ca.key'
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: create certificate signing request for the node CA cert
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: '{{ kcontroller_home }}/node-ca.key'
+    common_name: kube-controller-manager-{{ inventory_hostname }}
+    country_name: '{{ pki_country }}'
+    state_or_province_name: '{{ pki_state }}'
+    locality_name: '{{ pki_locality }}'
+    basic_constraints:
+      - CA:TRUE
+      - pathlen:0
+    key_usage:
+      - cRLSign
+      - keyCertSign
+    use_common_name_for_san: no
+  register: openssl_csr_pipe_result
+  changed_when: no
+
+- name: run sign task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: sign
+  vars:
+    csr_content: '{{ openssl_csr_pipe_result.csr }}'
+    crt_path: '{{ kcontroller_home }}/node-ca.crt'
+
+- name: run get_ca task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: get_ca
+  vars:
+    crt_path: '{{ kcontroller_home }}/ca.crt'
