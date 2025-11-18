@@ -1,4 +1,9 @@
 ---
+- name: install python3-kubernetes
+  ansible.builtin.package:
+    name: python3-kubernetes
+    state: present
+
 - name: create kube-apiserver folder structure
   ansible.builtin.file:
     path: '{{ kubectl_home }}'

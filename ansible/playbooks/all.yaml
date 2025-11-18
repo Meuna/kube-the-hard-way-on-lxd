@@ -19,6 +19,12 @@
   roles:
     - etcd
 
+- hosts: jumphost
+  become: true
+
+  roles:
+    - kube_admin
+
 - hosts: apiserver
   become: true
 
@@ -31,9 +37,3 @@
   roles:
     - kube_controller_manager
     - kube_scheduler
-
-- hosts: jumphost
-  become: true
-
-  roles:
-    - kube_admin
