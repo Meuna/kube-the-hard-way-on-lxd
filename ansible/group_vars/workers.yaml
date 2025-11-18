@@ -7,3 +7,6 @@ runc_url: https://github.com/opencontainers/runc/releases/download/v{{ runc_vers
 
 containerd_version: 2.2.0
 containerd_url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-amd64.tar.gz
+
+cni_version: 1.8.0
+cni_url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-linux-amd64-v{{ cni_version }}.tgz

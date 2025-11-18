@@ -44,3 +44,4 @@
   roles:
     - containerd
     - kubelet
+    - cni

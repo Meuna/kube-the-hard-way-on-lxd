@@ -1,0 +1,53 @@
+---
+- name: create etcd folder structure
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - '{{ cni_home }}'
+    - '{{ cni_home }}/bin'
+    - '{{ cni_home }}/etc'
+
+- name: download and install cni {{ cni_version }}
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: '{{ cni_url }}'
+    dest: '{{ cni_home }}/bin'
+    mode: '0750'
+
+- name: fetch Kubernetes Node information
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Node
+  register: k8s_info_result
+  delegate_to: '{{ groups.jumphost[0] }}'
+  run_once: yes
+
+- name: get the pod CIDR allocated to nodes
+  set_fact:
+    node_cidr_allocation: >-
+      {{
+        dict(k8s_info_result.resources
+        | map(attribute='metadata.name')
+        | zip(k8s_info_result.resources | map(attribute='spec.podCIDR')))
+      }}
+  run_once: yes
+
+- name: create 10-bridge.conf file
+  ansible.builtin.template:
+    src: 10-bridge.conf.j2
+    dest: '{{ cni_home }}/etc/10-bridge.conf'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: copy 99-loopback.conf file
+  ansible.builtin.copy:
+    src: 99-loopback.conf
+    dest: '{{ cni_home }}/etc/99-loopback.conf'
+    owner: root
+    group: root
+    mode: '0644'

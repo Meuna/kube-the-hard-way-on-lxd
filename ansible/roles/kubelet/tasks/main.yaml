@@ -44,3 +44,18 @@
 
 - name: enable and start kubelet
   ansible.builtin.service: name={{ kubelet_service }} state=started enabled=yes
+
+- name: wait until all nodes have Pod CIDRs allocated
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Node
+  register: k8s_nodes
+  delegate_to: '{{ groups.jumphost[0] }}'
+  run_once: yes
+  until: >-
+    k8s_nodes.resources
+    | map(attribute='spec.podCIDR')
+    | select('defined')
+    | length == k8s_nodes.resources | length
+  retries: 10
+  delay: 10
