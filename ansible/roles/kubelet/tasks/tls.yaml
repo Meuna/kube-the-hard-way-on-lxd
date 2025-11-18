@@ -17,7 +17,7 @@
     key_usage:
       - digitalSignature
       - keyEncipherment
-    key_usage_critical: true
+    key_usage_critical: yes
     extended_key_usage:
       - clientAuth
       - serverAuth

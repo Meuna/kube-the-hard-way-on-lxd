@@ -1,45 +1,45 @@
 ---
 - hosts: all
-  become: true
+  become: yes
 
   tasks:
     - name: update package cache
       ansible.builtin.package:
-        update_cache: true
+        update_cache: yes
 
 - hosts: pki
-  become: true
+  become: yes
 
   roles:
     - pki
 
 - hosts: etcd
-  become: true
+  become: yes
 
   roles:
     - etcd
 
 - hosts: jumphost
-  become: true
+  become: yes
 
   roles:
     - kube_admin
 
 - hosts: apiserver
-  become: true
+  become: yes
 
   roles:
     - kube_apiserver
 
 - hosts: managers
-  become: true
+  become: yes
 
   roles:
     - kube_controller_manager
     - kube_scheduler
 
 - hosts: workers
-  become: true
+  become: yes
 
   roles:
     - containerd
