@@ -45,3 +45,4 @@
     - containerd
     - kubelet
     - cni
+    - pod_static_routes

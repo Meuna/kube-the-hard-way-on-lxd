@@ -1,0 +1,20 @@
+# "Call" this task file using using include/import,
+# and variable defined following the example.
+# 
+# Example:
+#
+# - name: run get_sa_key task from pod_static_routes role
+#   include_tasks: add_route.yml
+#   vars:
+#     cidr: 10.200.1.0/24
+#     gateway: 10.10.10.56
+---
+- name: check if the static route exists
+  command: ip route show {{ cidr }}
+  register: cmd_result
+  changed_when: false
+  ignore_errors: true
+
+- name: add static route to {{ cidr }} via {{ gateway }}
+  command: ip route add {{ cidr }} via {{ gateway }}
+  when: not cmd_result.stdout

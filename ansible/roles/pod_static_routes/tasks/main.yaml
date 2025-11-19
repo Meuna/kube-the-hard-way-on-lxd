@@ -1,0 +1,26 @@
+---
+- name: fetch Kubernetes Node information
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Node
+  register: k8s_info_result
+  delegate_to: '{{ groups.jumphost[0] }}'
+  run_once: yes
+
+- name: get the pod CIDR allocated to nodes
+  set_fact:
+    node_cidr_allocation: >-
+      {{
+        dict(k8s_info_result.resources
+        | map(attribute='metadata.name')
+        | zip(k8s_info_result.resources | map(attribute='spec.podCIDR')))
+      }}
+  run_once: yes
+
+- name: add route to other nodes
+  include_tasks: add_route.yaml
+  loop: '{{ node_cidr_allocation | dict2items }}'
+  vars:
+    cidr: '{{ item.value }}'
+    gateway: '{{ hostvars[item.key].ansible_default_ipv4.address }}'
+  when: item.key != inventory_hostname
