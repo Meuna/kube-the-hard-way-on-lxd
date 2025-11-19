@@ -16,7 +16,7 @@
 - ansible.builtin.import_tasks: tls.yaml
 
 - name: generate initial cluster string
-  set_fact:
+  ansible.builtin.set_fact:
     etcd_servers: >-
       {{ groups['etcd']
         | map('extract', hostvars)

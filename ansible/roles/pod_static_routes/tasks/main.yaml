@@ -8,7 +8,7 @@
   run_once: yes
 
 - name: get the pod CIDR allocated to nodes
-  set_fact:
+  ansible.builtin.set_fact:
     node_cidr_allocation: >-
       {{
         dict(k8s_info_result.resources

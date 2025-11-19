@@ -4,7 +4,7 @@
     name: python3-kubernetes
     state: present
 
-- name: create kube-apiserver folder structure
+- name: create kubectl default folder
   ansible.builtin.file:
     path: '{{ kubectl_home }}'
     state: directory
