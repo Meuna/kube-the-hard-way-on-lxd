@@ -23,6 +23,6 @@
     name: kube_utils
     tasks_from: gen_kubeconfig
   vars:
-    kubeconfig_path: '{{ kubectl_home }}/kubeconfig'
+    kubeconfig_path: '{{ kubectl_home }}/config'
     key_path: '{{ kubectl_home }}/client.key'
     crt_path: '{{ kubectl_home }}/client.crt'
