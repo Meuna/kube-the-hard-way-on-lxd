@@ -10,7 +10,6 @@
   community.crypto.openssl_csr_pipe:
     privatekey_path: '{{ kscheduler_home }}/client.key'
     common_name: '{{ kube_username }}'
-    organization_name: '{{ kube_username }}'
     country_name: '{{ pki_country }}'
     state_or_province_name: '{{ pki_state }}'
     locality_name: '{{ pki_locality }}'
