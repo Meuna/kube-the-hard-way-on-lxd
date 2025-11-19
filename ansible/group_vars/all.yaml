@@ -4,6 +4,8 @@ pki_state: Occitanie
 pki_locality: Toulouse
 domain: kthw.local
 
+etcd_version: 3.6.4
+etcd_url: https://github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz
 etcd_client_port: '2379'
 etcd_peer_port: '2380'
 

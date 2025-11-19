@@ -13,17 +13,18 @@
   roles:
     - pki
 
-- hosts: etcd
-  become: yes
-
-  roles:
-    - etcd
-
 - hosts: jumphost
   become: yes
 
   roles:
     - kube_admin
+    - etcd_admin
+
+- hosts: etcd
+  become: yes
+
+  roles:
+    - etcd
 
 - hosts: apiserver
   become: yes

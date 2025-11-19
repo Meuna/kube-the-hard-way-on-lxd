@@ -11,8 +11,6 @@
     - '{{ etcd_home }}/etc'
     - '{{ etcd_home }}/var'
 
-- ansible.builtin.import_tasks: tls.yaml
-
 - name: download and install etcd {{ etcd_version }}
   ansible.builtin.unarchive:
     remote_src: yes
@@ -22,8 +20,10 @@
     extra_opts: --strip-components=1
     mode: '0750'
 
+- ansible.builtin.import_tasks: tls.yaml
+
 - name: generate initial cluster string
-  set_fact:
+  ansible.builtin.set_fact:
     initial_cluster: >-
       {{ groups['etcd']
         | zip(groups['etcd'] | map('extract', hostvars) | map(attribute='ansible_host'))

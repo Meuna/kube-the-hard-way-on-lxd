@@ -1,0 +1,37 @@
+---
+- name: create TLS private key
+  community.crypto.openssl_privatekey:
+    path: '{{ etcdctl_home }}/client.key'
+    mode: '0600'
+
+- name: create certificate signing request
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: '{{ etcdctl_home }}/client.key'
+    common_name: admin
+    country_name: '{{ pki_country }}'
+    state_or_province_name: '{{ pki_state }}'
+    locality_name: '{{ pki_locality }}'
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: yes
+    extended_key_usage:
+      - clientAuth
+    use_common_name_for_san: no
+  register: openssl_csr_pipe_result
+  changed_when: no
+
+- name: run sign task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: sign
+  vars:
+    csr_content: '{{ openssl_csr_pipe_result.csr }}'
+    crt_path: '{{ etcdctl_home }}/client.crt'
+
+- name: run get_ca task from pki role
+  ansible.builtin.import_role:
+    name: pki
+    tasks_from: get_ca
+  vars:
+    crt_path: '{{ etcdctl_home }}/ca.crt'

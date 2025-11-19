@@ -1,0 +1,8 @@
+#!/bin/bash
+remotes=$(cat {{ etcdctl_home }}/remotes)
+{{ install_dir }}/etcdctl \
+  --endpoints=$remotes \
+  --cacert={{ etcdctl_home }}/ca.crt \
+  --cert={{ etcdctl_home }}/client.crt \
+  --key={{ etcdctl_home }}/client.key \
+  "$@"

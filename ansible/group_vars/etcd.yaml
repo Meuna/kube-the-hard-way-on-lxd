@@ -1,4 +1,2 @@
 ---
-etcd_version: 3.6.4
-etcd_url: https://github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz
 cluster_token: '{{ domain }}'

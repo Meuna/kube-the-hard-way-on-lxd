@@ -1,0 +1,41 @@
+---
+- name: create etcdctl default folder
+  ansible.builtin.file:
+    path: '{{ etcdctl_home }}'
+    state: directory
+    mode: '0755'
+
+- name: download and install etcdctl {{ etcd_version }}
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: '{{ etcd_url }}'
+    dest: '{{ install_dir }}'
+    include: etcd-v{{ etcd_version }}-linux-amd64/etcdctl
+    extra_opts: --strip-components=1
+    mode: '0755'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: generate initial cluster string
+  ansible.builtin.set_fact:
+    etcd_servers: >-
+      {{ groups['etcd']
+        | map('extract', hostvars)
+        | map(attribute='ansible_host')
+        | map('regex_replace', '^(.*)$', 'https://\1:' + etcd_client_port)
+        | join(',')
+      }}
+  run_once: yes
+
+- name: write remote file with the cluster string
+  ansible.builtin.copy:
+    content: '{{ etcd_servers }}'
+    dest: '{{ etcdctl_home }}/remotes'
+
+- name: create etcdctl-default script
+  ansible.builtin.template:
+    src: etcdctl-default.j2
+    dest: '{{ install_dir }}/etcdctl-default'
+    owner: root
+    group: root
+    mode: '0755'
