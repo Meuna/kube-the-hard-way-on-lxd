@@ -1,0 +1,5 @@
+---
+kproxy_home: /opt/kube-proxy
+kproxy_service: kube-proxy
+kube_username: system:kube-proxy
+install_dir: /usr/local/bin

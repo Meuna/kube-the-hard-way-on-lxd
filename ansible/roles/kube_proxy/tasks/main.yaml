@@ -1,0 +1,46 @@
+---
+- name: create kube-proxy folder structure
+  ansible.builtin.file:
+    path: '{{ kproxy_home }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: download and install kube-proxy {{ kube_version }}
+  ansible.builtin.get_url:
+    url: '{{ kube_base_url }}/kube-proxy'
+    dest: '{{ install_dir }}/kube-proxy'
+    mode: '0750'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: run gen_kubeconfig task from kube_utils role
+  ansible.builtin.import_role:
+    name: kube_utils
+    tasks_from: gen_kubeconfig
+  vars:
+    kubeconfig_path: '{{ kproxy_home }}/kubeconfig'
+    key_path: '{{ kproxy_home }}/client.key'
+    crt_path: '{{ kproxy_home }}/client.crt'
+
+- name: create kube-proxy.yaml
+  ansible.builtin.template:
+    src: kube-proxy.yaml.j2
+    dest: '{{ kproxy_home }}/kube-proxy.yaml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kube-proxy
+
+- name: create {{ kproxy_service }}.service unit file
+  ansible.builtin.template:
+    src: unitfile.j2
+    dest: /etc/systemd/system/{{ kproxy_service }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart kube-proxy
+
+- name: enable and start kube-proxy
+  ansible.builtin.service: name={{ kproxy_service }} state=started enabled=yes

@@ -1,0 +1,3 @@
+---
+- name: restart kube-proxy
+  ansible.builtin.service: name={{ kproxy_service }} state=restarted
