@@ -9,7 +9,7 @@ authentication:
     clientCAFile: "{{ kubelet_home }}/ca.crt"
 authorization:
   mode: Webhook
-clusterDomain: "cluster.local"
+clusterDomain: "{{ kube_cluster_domain }}"
 clusterDNS:
   - "{{ kube_dns_cluster_ip }}"
 cgroupDriver: systemd

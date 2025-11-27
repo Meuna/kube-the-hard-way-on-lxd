@@ -48,3 +48,9 @@
     - cni
     - pod_static_routes
     - kube_proxy
+
+- hosts: jumphost
+  become: yes
+
+  roles:
+    - coredns
