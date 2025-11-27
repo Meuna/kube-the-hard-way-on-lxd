@@ -88,7 +88,6 @@
 
 - name: create kube-apiserver-to-kubelet ClusterRoleBinding
   kubernetes.core.k8s:
-    kubeconfig: ~/.kube/config
     state: present
     definition:
       apiVersion: rbac.authorization.k8s.io/v1
