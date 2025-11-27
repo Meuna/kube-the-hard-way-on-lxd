@@ -61,6 +61,15 @@
 - name: enable and start kube-apiserver
   ansible.builtin.service: name={{ kapiserver_service }} state=started enabled=yes
 
+- name: Wait for ClusterRole and ClusterRoleBinding api to be ready
+  ansible.builtin.command: kubectl api-resources --api-group=rbac.authorization.k8s.io
+  changed_when: no
+  register: command_result
+  retries: 10
+  delay: 5
+  until: '"ClusterRoleBinding" in command_result.stdout and "ClusterRole" in command_result.stdout'
+  delegate_to: '{{ groups.jumphost[0] }}'
+
 - name: create kube-apiserver-to-kubelet ClusterRole
   kubernetes.core.k8s:
     state: present
